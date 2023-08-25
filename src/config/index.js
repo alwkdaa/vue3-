@@ -24,4 +24,5 @@ export default {
   env,
   mock: true,//模拟数据 默认开启
   ...EnvConfig[env],
+  namespace: 'manage'
 }

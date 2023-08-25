@@ -5,6 +5,9 @@ export default {
     goHome(){
       this.$router.push('/welcome')
     }
+  },
+  mounted(){
+
   }
 }
 </script>
