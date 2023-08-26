@@ -7,7 +7,7 @@ const env = import.meta.env.MODE || 'prod'
 // 在公司中一般有三个环境 开发环境dev，测试环境test，生产环境prod
 const EnvConfig = {
   dev: {
-    baseApi: '/',
+    baseApi: '/api',
     mockApi:'https://www.fastmock.site/mock/7196499c00b5911ba5d63e4f49774cfc/api'
   },
   test: {
@@ -22,7 +22,8 @@ const EnvConfig = {
 
 export default {
   env,
-  mock: true,//模拟数据 默认开启
+  //模拟数据 默认开启
+  // mock: true,
   ...EnvConfig[env],
   namespace: 'manage'
 }

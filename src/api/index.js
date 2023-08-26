@@ -7,7 +7,7 @@ export default{
       url:'/users/login',
       method:'post',
       data: params,//这里的params要从页面点击按钮将表单的数据传递进来
-      mock: true
+      // mock: true
     })
   }
 }

@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import router from '../router'
 
 const TOKEN_ERROR = 'Token认证失败，请重新登录'
-const NETWORK_ERROR = '网络请求一场，请稍后重试...'
+const NETWORK_ERROR = '网络请求异常，请稍后重试...'
 // 创建axios的实例对象  添加配置
 const service = axios.create({
   baseURL: config.baseApi,
@@ -27,7 +27,7 @@ service.interceptors.response.use((res) => {
   // 对返回的状态码code进行判断
   if( code === 200 ){
     return data
-  }else if(code === 40001){//在这里40001是token认证失败的状态码，后端定义的，所做的就是token认证失败的处理 一般在本文件的开头定义token失败的提示语TOKEN_ERROR，在这里给一个失败的提示
+  }else if(code === 50001){//在这里50001是token认证失败的状态码，后端定义的，所做的就是token认证失败的处理 一般在本文件的开头定义token失败的提示语TOKEN_ERROR，在这里给一个失败的提示
     ElMessage.error(TOKEN_ERROR)
     // 然后给一个定时器，返回登录页
     setTimeout(() => {
@@ -36,9 +36,9 @@ service.interceptors.response.use((res) => {
     // 然后返回请求错误
     return Promise.reject(TOKEN_ERROR)
   }else{
-    // 如果不是200也不是40001，有可能是一些服务器错误，与token认证失败一样，在本文件开头定义服务器失败的提示语NETWORK_ERROR
-    ElMessage.error(NETWORK_ERROR)
-    return Promise.reject(NETWORK_ERROR)
+    // 如果不是200也不是50001，有可能是一些服务器错误，与token认证失败一样，在本文件开头定义服务器失败的提示语NETWORK_ERROR
+    ElMessage.error(msg || NETWORK_ERROR)
+    return Promise.reject(msg || NETWORK_ERROR)
   }
 })
 

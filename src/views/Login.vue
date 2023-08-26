@@ -20,7 +20,7 @@ export default {
     login() {
       // 这里如果验证通过就是true
       this.$refs.userForm.validate((valid) => {
-        console.log(valid);
+        // console.log(valid);
         if (valid) {
           this.$api.login(this.user).then((res) => {
             console.log(res);
