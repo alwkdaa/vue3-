@@ -16,6 +16,8 @@ import storage from './utils/storage'
 }) */
 const app = createApp(App)
 
+
+
 // 注册request
 app.config.globalProperties.$request = request
 app.config.globalProperties.$storage = storage
