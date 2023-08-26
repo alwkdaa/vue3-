@@ -14,16 +14,20 @@ export default {
       userInfo: {
         userName: 'lsl',
         userEmail: 'lsl@email.com'
-      }
+      },
+      isCollapse: false,
     }
   },
   methods: {
     handleLogout(key) {
       console.log(key);
-      if(key == "email") return
-      this.$store.commit('saveUserInfo','')
+      if (key == "email") return
+      this.$store.commit('saveUserInfo', '')
       this.userInfo = null
       this.$router.push('/login')
+    },
+    toggle() {
+      this.isCollapse = !this.isCollapse
     }
   }
 }
@@ -32,17 +36,21 @@ export default {
 <template>
   <div class="basic-layout">
     <!-- 左侧 -->
-    <div class="nav-side">
+    <div :class="['nav-side', isCollapse ? 'fold' : 'unfold']">
       <!-- logo部分 -->
       <div class="logo">
         <img src="../assets/logo.png" alt="">
         <span>Manager</span>
       </div>
       <!-- 菜单部分 collapse控制菜单折叠-->
-      <el-menu default-active="2" class="nav-menu" background-color="#001529" text-color="#fff" :collapse="false" router>
+      <el-menu default-active="2" class="nav-menu" background-color="#001529" text-color="#fff" :collapse="isCollapse"
+        router>
         <el-sub-menu index="1">
           <template #title>
-            <setting class="menu-setting"></setting>
+
+            <el-icon class="el-icon-setting">
+              <setting></setting>
+            </el-icon>
             <span>系统管理</span>
           </template>
           <el-menu-item index="1-1">用户管理</el-menu-item>
@@ -50,7 +58,9 @@ export default {
         </el-sub-menu>
         <el-sub-menu index="2">
           <template #title>
-            <setting class="menu-setting"></setting>
+            <el-icon class="el-icon-setting">
+              <setting></setting>
+            </el-icon>
             <span>审批管理</span>
           </template>
           <el-menu-item index="2-1">休假管理</el-menu-item>
@@ -59,12 +69,15 @@ export default {
       </el-menu>
     </div>
     <!-- 右侧 -->
-    <div class="content-right">
+    <div :class="['content-right', isCollapse ? 'fold' : 'unfold']">
       <!-- 上方导航 -->
       <div class="nav-top">
         <!-- 左边面包屑 -->
         <div class="nav-left">
-          <fold class="menu-fold"></fold>
+          <el-icon class="el-icon-fold" size="25" style="margin-right: 10px;">
+            <fold @click="toggle()" ></fold>
+          </el-icon>
+          
           <div class="bread">面包屑</div>
         </div>
         <!-- 右侧用户信息 -->
@@ -112,7 +125,8 @@ export default {
     height: 100vh;
     background-color: #001529;
     color: #fff;
-    overflow-y: auto; //滚动条
+    //滚动条
+    // overflow-y: auto; 
     transition: width 0.5s;
 
     .logo {
@@ -145,6 +159,14 @@ export default {
       span {}
 
     }
+
+    &.fold {
+      width: 64px;
+    }
+
+    &.unfold {
+      width: 200px;
+    }
   }
 
   .content-right {
@@ -161,16 +183,13 @@ export default {
       .nav-left {
         display: flex;
         align-items: center;
-
+        z-index: 10;
         .menu-fold {
           width: 25px;
           height: 25px;
           margin-right: 15px;
         }
 
-        .bread {}
-
-      }
 
       .user-info {
         .user-badge {
@@ -186,6 +205,7 @@ export default {
           .user-link {
             cursor: pointer;
             color: #409eff;
+
             .el-icon--right {}
           }
         }
@@ -205,6 +225,14 @@ export default {
         background-color: #fff;
       }
     }
+
+    &.fold {
+      margin-left: 64px;
+    }
+
+    &.unfold {
+      margin-left: 200px;
+    }
   }
-}
-</style>
+
+}</style>
