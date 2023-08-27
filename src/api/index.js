@@ -16,7 +16,7 @@ export default{
       url:'/leave/count',
       method:'get',
       data: {},
-      mock: false
+      mock: true
     })
   },
   // 菜单接口
@@ -25,7 +25,7 @@ export default{
       url:'/menu/list',
       method:'get',
       data: {},
-      mock: false
+      mock: true
     })
   }
 }

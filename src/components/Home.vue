@@ -34,7 +34,6 @@
           <el-dropdown class="user-dropdown" @command="handleLogout">
             <span class="user-link">
               {{ userInfo.userName }}
-     
               <i class="el-icon-arrowdown"></i>
             </span>
             <template #dropdown>
@@ -49,9 +48,7 @@
       <!-- 下面区域 -->
       <div class="wrapper">
         <!-- 主要区域 -->
-        <div class="main-page">
           <router-view></router-view>
-        </div>
       </div>
     </div>
   </div>
@@ -197,11 +194,6 @@ export default {
       background: #eef0f3;
       padding: 20px;
       height: calc(100vh - 50px);
-
-      .main-page {
-        height: 100%;
-        background-color: #fff;
-      }
     }
 
     &.fold {
