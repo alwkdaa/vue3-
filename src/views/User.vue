@@ -18,13 +18,13 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button @click="handleReset('form')">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary">新增</el-button>
+        <el-button type="primary" @click="handleCreate">新增</el-button>
         <el-button type="danger" @click="handlePatchDelete">批量删除</el-button>
       </div>
       <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange">
@@ -40,10 +40,52 @@
       </el-table>
       <el-pagination class="pagination" background layout="prev, pager,next" :total="pager.total" @current-change="handleCurrentChange"></el-pagination>
     </div>
+    <!-- 用户新增 -->
+    <el-dialog title="用户新增" v-model="showModal" :before-close="handleClose">
+      <el-form :model="userForm" ref="dialogForm" label-width="100px" :rules="rules">
+        <el-form-item prop="userName" label="用户名">
+          <el-input placeholder="请输入用户名" v-model="userForm.userName"></el-input>
+        </el-form-item>
+        <el-form-item prop="userEmail" label="邮箱">
+          <el-input placeholder="请输入邮箱" v-model="userForm.userEmail">
+            <template #append>@jason.com</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="mobile" label="手机号">
+          <el-input placeholder="请输入手机号" v-model="userForm.mobile"></el-input>
+        </el-form-item>
+        <el-form-item prop="job" label="岗位">
+          <el-input placeholder="请输入岗位" v-model="userForm.job"></el-input>
+        </el-form-item>
+        <el-form-item prop="state" label="状态">
+          <el-select v-model="userForm.state" >
+            <el-option :value="1" label="在职"></el-option>
+            <el-option :value="2" label="离职"></el-option>
+            <el-option :value="3" label="试用期"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="roleList" label="系统角色">
+          <el-select v-model="userForm.roleList" placeholder="请选择用户系统角色" multiple style="width:100%">
+            <el-option v-for="role in roleList" :key="role._id" :value="role._id" :label="role.roleName"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="deptId" label="部门">
+           <el-cascader placeholder="请选择部门" v-model="userForm.deptId" :options="deptList" :props="{ checkStrictly: true, value:'_id', label:'deptName' }" clearable></el-cascader>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="handleClose">取消</el-button>
+        <el-button type="primary" @click="handleSubmit">
+          确定
+        </el-button>
+      </span>
+    </template>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { onMounted, reactive, getCurrentInstance, ref } from 'vue';
+import { onMounted, reactive, getCurrentInstance, ref, toRaw } from 'vue';
 export default {
   name: 'User',
   setup() {
@@ -52,6 +94,8 @@ export default {
     // Mounted生命周期函数
     onMounted(() => {
       getUserList()
+      getRoleList()
+      getDeptList()
     });
     // 查找的数据
     const user = reactive({
@@ -121,8 +165,8 @@ export default {
       getUserList()
     }
     // 重置的方法
-    const handleReset = () => {
-      proxy.$refs.form.resetFields()
+    const handleReset = (form) => {
+      proxy.$refs[form].resetFields()
     };
     // 分页的点击
     const handleCurrentChange = (current) => {
@@ -168,6 +212,89 @@ export default {
       });
       checkedUsersIds.value = arr
     }
+    /* 用户新增 */
+    // 控制新增用户页面的展示
+    const showModal = ref(false)
+    // 新增按钮
+    const handleCreate = () => {
+      showModal.value = true
+    }
+    // 新增表单的信息
+    const userForm = reactive({
+      state:1
+    })
+    // 表单验证规则
+    const rules = reactive({
+      userName: [
+        {
+          required: true,
+          message: "请输入用户名称",
+          trigger: "blur"
+        }
+      ],
+      userEmail: [
+        {
+          required: true,
+          message: "请输入用户邮箱",
+          trigger: "blur"
+        }
+      ],
+      deptId: [
+        {
+          required: true,
+          message: "请选择部门",
+          trigger: "blur"
+        }
+      ],
+      mobile:[
+        {
+          pattern:/1[3-9]\d{9}/,
+          message:"请输入正确的手机格式",
+          trigger: "blur"
+        }
+      ]
+    })
+    // 角色名称列表
+    const roleList = ref([])
+    // 调用获取角色名称列表
+    const getRoleList = async () => {
+      const res = await proxy.$api.getRoleList()
+      roleList.value = res
+    }
+    // 部门列表
+    const deptList = ref([])
+    // 调用获取部门列表
+    const getDeptList = async () => {
+      const res = await proxy.$api.getDeptList()
+      deptList.value = res
+    }
+    // 点击取消触发的方法
+    const handleClose = () => {
+      showModal.value = false
+      handleReset('dialogForm')
+    }
+    // 因为添加用户的参数中有一个action来判断是新增还是编辑，需要绑定成动态的
+    const action = ref('add')
+    //点击确定触发的方法
+    const handleSubmit =  () => {
+      // 先验证新增用户的表单填写了
+      proxy.$refs.dialogForm.validate(async (valid) => {
+        if(valid){
+          // 这个toRaw会将双向绑定的userForm对象变为普通的对象
+          let params = toRaw(userForm)
+          params.userEmail += '@jason.com'
+          params.action = action.value
+          let res = await proxy.$api.userSubmit(params)
+          if(res){
+            showModal.value = false
+            proxy.$message.success('新增用户成功')
+            handleReset("dialogForm")
+            getUserList()
+          }
+        }
+      })
+      
+    }
     return {
       user,
       userList,
@@ -180,6 +307,16 @@ export default {
       handleDelete,
       handlePatchDelete,
       handleSelectionChange,
+      showModal,
+      handleCreate,
+      userForm,
+      rules,
+      roleList,
+      getRoleList,
+      deptList,
+      getDeptList,
+      handleClose,
+      handleSubmit,
     }
   },
 }
