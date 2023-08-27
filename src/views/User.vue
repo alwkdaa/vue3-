@@ -32,9 +32,9 @@
         <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
           :width="item.width" />
         <el-table-column label="操作" width="150">
-          <template #default>
+          <template #default="scope">
             <el-button size="mini">编辑</el-button>
-            <el-button type="danger" size="mini">删除</el-button>
+            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -116,6 +116,18 @@ export default {
       pager.pageNum = current
       getUserList()
     }
+    // 删除按钮
+    const handleDelete = async (row) => {
+      const res = await proxy.$api.userDelete({
+        userIds: [row.userId]
+      })
+      if(res.nModified>0){
+        proxy.$message.success('删除成功')
+        getUserList()
+      }else{
+        proxy.$message.success('删除失败')
+      }
+    }
     return {
       user,
       userList,
@@ -124,6 +136,7 @@ export default {
       handleQuery,
       handleReset,
       handleCurrentChange,
+      handleDelete,
     }
   },
 }

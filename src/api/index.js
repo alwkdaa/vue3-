@@ -36,5 +36,14 @@ export default{
       data: params,
       mock: true
     })
-  } 
+  } ,
+  // 删除用户接口
+  userDelete(params){
+    return request({
+      url:'/users/delete',
+      method:'post',
+      data: params,
+      mock: true
+    })
+  }
 }
