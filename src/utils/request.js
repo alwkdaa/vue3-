@@ -2,6 +2,8 @@ import axios from 'axios'
 import config from '../config'
 import { ElMessage } from 'element-plus'
 import router from '../router'
+// 获取到token，因为登录的信息都存在storage持久化中，所以这里引入storage
+import storage from './storage'
 
 const TOKEN_ERROR = 'Token认证失败，请重新登录'
 const NETWORK_ERROR = '网络请求异常，请稍后重试...'
@@ -15,8 +17,9 @@ const service = axios.create({
 service.interceptors.request.use((req) => {
   // 一些公共的请求机制
   const header = req.headers
-
-  if(!header.Authorization) header.Authorization = 'Jason'
+  // 拿到数据持久化中的token
+  const { token="" } = storage.getItem('userInfo') || {}
+  if(!header.Authorization) header.Authorization = 'Bear ' + token
   return req
 })
 
