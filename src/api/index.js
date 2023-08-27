@@ -27,5 +27,14 @@ export default{
       data: {},
       mock: true
     })
-  }
+  },
+  //获取用户列表接口
+  userList(params){ 
+    return request({
+      url:'/users/list',
+      method:'get',
+      data: params,
+      mock: true
+    })
+  } 
 }

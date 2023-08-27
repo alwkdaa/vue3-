@@ -21,9 +21,10 @@ import store from './store'
 const app = createApp(App)
 
 // 注册request
-app.config.globalProperties.$request = request
-app.config.globalProperties.$storage = storage
-app.config.globalProperties.$api = api
+app.config.globalProperties.$request = request;
+app.config.globalProperties.$api = api;
+app.config.globalProperties.$storage = storage;
+
 
 app.use(router)
 app.use(ElementPlus, { size: 'small' })

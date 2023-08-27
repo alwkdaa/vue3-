@@ -1,14 +1,14 @@
 <template>
   <div class="user-manage">
     <div class="query-form">
-      <el-form :inline="true" :model="user">
-        <el-form-item>
+      <el-form :inline="true" :model="user" ref="form">
+        <el-form-item label="用户ID" prop="userId">
           <el-input v-model="user.userId" placeholder="请输入用户ID"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="用户名" prop="userName">
           <el-input v-model="user.userName" placeholder="请输入用户名"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item  label="状态" prop="state">
           <el-select v-model="user.state">
             <el-option :value="0" label="所有"></el-option>
             <el-option :value="1" label="在职"></el-option>
@@ -17,8 +17,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">查询</el-button>
-          <el-button>重置</el-button>
+          <el-button type="primary" @click="handleQuery">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -42,38 +42,19 @@
   </div>
 </template>
 <script>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, getCurrentInstance, ref } from 'vue';
 export default {
   name: 'User',
   setup() {
+    const { proxy } = getCurrentInstance()
     onMounted(() => {
-      console.log("...init");
+      getUserList()
+    });
+
+    const user = reactive({
+      state: 0
     })
-    const age = ref(0)
-    const user = reactive({})
-    const userList = reactive([
-    {
-        "state": 1,
-        "role": "0",
-        "roleList": [
-          "60180b07b1eaed6c45fbebdb",
-          "60150cb764de99631b2c3cd3",
-          "60180b59b1eaed6c45fbebdc"
-        ],
-        "deptId": [
-          "60167059c9027b7d2c520a61",
-          "60167345c6a4417f2d27506f"
-        ],
-        "userId": 1000002,
-        "userName": "admin",
-        "userEmail": "admin@jason.com",
-        "createTime": "2021-01-17T13:32:06.381Z",
-        "lastLoginTime": "2021-01-17T13:32:06.381Z",
-        "__v": 0,
-        "job": "前端架构师",
-        "mobile": "17611020000"
-      }
-    ])
+    const userList = ref([])
     const columns = reactive([
       {
         label: "用户ID",
@@ -104,10 +85,32 @@ export default {
         prop: "lastLoginTime"
       },
     ])
+    const pager = reactive({
+      pageNum: 1,
+      pageSize: 10,
+      total: 10
+    })
+    // 调用用户列表数据接口的方法
+    const getUserList = async () => {
+      let params = { ...user, ...pager }
+      const { page, list } = await proxy.$api.userList(params);
+      pager.total = page.total
+      userList.value = list
+    }
+    // 查询的方法
+    const handleQuery = () => {
+      getUserList()
+    }
+    // 重置的方法
+    const handleReset = () => {
+      proxy.$refs.form.resetFields()
+    }
     return {
       user,
       userList,
-      columns
+      columns,
+      handleQuery,
+      handleReset,
     }
   },
 }
