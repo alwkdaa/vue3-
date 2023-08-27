@@ -20,8 +20,6 @@ import store from './store'
 }) */
 const app = createApp(App)
 
-
-
 // 注册request
 app.config.globalProperties.$request = request
 app.config.globalProperties.$storage = storage

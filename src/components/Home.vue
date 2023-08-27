@@ -1,47 +1,3 @@
-
-<script>
-import { Setting, Fold, Bell, ArrowDown } from '@element-plus/icons-vue'
-export default {
-  name: 'home',
-  components: {
-    setting: Setting,
-    fold: Fold,
-    bell: Bell,
-    ArrowDown
-  },
-  data() {
-    return {
-      userInfo: {
-        userName: 'lsl',
-        userEmail: 'lsl@email.com'
-      },
-      isCollapse: false,
-      // 待审批事项
-      noticeCount: 0,
-    }
-  },
-  mounted() {
-    this.getNoticeCount()
-  },
-  methods: {
-    handleLogout(key) {
-      console.log(key);
-      if (key == "email") return
-      this.$store.commit('saveUserInfo', '')
-      this.userInfo = null
-      this.$router.push('/login')
-    },
-    toggle() {
-      this.isCollapse = !this.isCollapse
-    },
-    async getNoticeCount() {
-      const res = await this.$api.noticeCount()
-      this.noticeCount = res
-    }
-  }
-}
-</script>
-
 <template>
   <div class="basic-layout">
     <!-- 左侧 -->
@@ -52,28 +8,9 @@ export default {
         <span>Manager</span>
       </div>
       <!-- 菜单部分 collapse控制菜单折叠-->
-      <el-menu default-active="2" class="nav-menu" background-color="#001529" text-color="#fff" :collapse="isCollapse"
+      <el-menu default-active="" class="nav-menu" background-color="#001529" text-color="#fff" :collapse="isCollapse"
         router>
-        <el-sub-menu index="1">
-          <template #title>
-            <el-icon>
-              <setting></setting>
-            </el-icon>
-            <span>系统管理</span>
-          </template>
-          <el-menu-item index="1-1">用户管理</el-menu-item>
-          <el-menu-item index="1-2">菜单管理</el-menu-item>
-        </el-sub-menu>
-        <el-sub-menu index="2">
-          <template #title>
-            <el-icon>
-              <setting></setting>
-            </el-icon>
-            <span>审批管理</span>
-          </template>
-          <el-menu-item index="2-1">休假管理</el-menu-item>
-          <el-menu-item index="2-2">待我审批</el-menu-item>
-        </el-sub-menu>
+        <tree-menu :userMenu="userMenu" />
       </el-menu>
     </div>
     <!-- 右侧 -->
@@ -82,25 +19,21 @@ export default {
       <div class="nav-top">
         <!-- 左边面包屑 -->
         <div class="nav-left">
-          <el-icon :size="25" style="margin-right: 10px;">
-            <fold @click="toggle()"></fold>
-          </el-icon>
-
+          <div class="menu-fold" @click="toggle">
+            <i class="el-icon-s-fold"></i>
+          </div>
           <div class="bread">面包屑</div>
         </div>
         <!-- 右侧用户信息 -->
         <div class="user-info">
           <el-badge :is-dot="noticeCount > 0 ? true : false" class="user-badge">
-            <el-icon>
-              <bell></bell>
-            </el-icon>
+            <i class="el-icon-bell"></i>
           </el-badge>
           <el-dropdown class="user-dropdown" @command="handleLogout">
             <span class="user-link">
               {{ userInfo.userName }}
-              <el-icon>
-                <arrow-down />
-              </el-icon>
+     
+              <i class="el-icon-arrowdown"></i>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
@@ -121,6 +54,54 @@ export default {
     </div>
   </div>
 </template>
+<script>
+// 引入左侧菜单组件
+import TreeMenu from './TreeMenu.vue'
+export default {
+  name: 'home',
+  components: {
+    TreeMenu
+  },
+  data() {
+    return {
+      userInfo: this.$store.state.userInfo,
+      isCollapse: false,
+      // 待审批事项
+      noticeCount: 0,
+      // 菜单列表数据
+      userMenu: [],
+    }
+  },
+  mounted() {
+    this.getNoticeCount()
+    this.getMenuList()
+  },
+  methods: {
+    handleLogout(key) {
+      console.log(key);
+      if (key == "email") return
+      this.$store.commit('saveUserInfo', '')
+      this.userInfo = null
+      this.$router.push('/login')
+    },
+    toggle() {
+      this.isCollapse = !this.isCollapse
+    },
+    // 获取待审批事项
+    async getNoticeCount() {
+      const res = await this.$api.noticeCount()
+      this.noticeCount = res
+    },
+    // 获取菜单数据
+    async getMenuList() {
+      const res = await this.$api.menuList()
+      this.userMenu = res
+    }
+  }
+}
+</script>
+
+
 
 
 <style lang="scss" scoped>
@@ -179,8 +160,11 @@ export default {
         display: flex;
         align-items: center;
         z-index: 10;
+        .menu-fold {
+          margin-right: 15px;
+          font-size: 18px;
+        }
 
-        
 
       }
 
@@ -192,6 +176,7 @@ export default {
 
         .user-dropdown {
           margin-top: 15px;
+
           .user-link {
             cursor: pointer;
             color: #409eff;

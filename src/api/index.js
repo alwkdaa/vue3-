@@ -18,5 +18,14 @@ export default{
       data: {},
       mock: true
     })
+  },
+  // 菜单接口
+  menuList(){
+    return request({
+      url:'/menu/list',
+      method:'get',
+      data: {},
+      mock: true
+    })
   }
 }
