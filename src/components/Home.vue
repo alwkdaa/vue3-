@@ -16,7 +16,12 @@ export default {
         userEmail: 'lsl@email.com'
       },
       isCollapse: false,
+      // 待审批事项
+      noticeCount: 0,
     }
+  },
+  mounted() {
+    this.getNoticeCount()
   },
   methods: {
     handleLogout(key) {
@@ -28,6 +33,10 @@ export default {
     },
     toggle() {
       this.isCollapse = !this.isCollapse
+    },
+    async getNoticeCount() {
+      const res = await this.$api.noticeCount()
+      this.noticeCount = res
     }
   }
 }
@@ -47,8 +56,7 @@ export default {
         router>
         <el-sub-menu index="1">
           <template #title>
-
-            <el-icon class="el-icon-setting">
+            <el-icon>
               <setting></setting>
             </el-icon>
             <span>系统管理</span>
@@ -58,7 +66,7 @@ export default {
         </el-sub-menu>
         <el-sub-menu index="2">
           <template #title>
-            <el-icon class="el-icon-setting">
+            <el-icon>
               <setting></setting>
             </el-icon>
             <span>审批管理</span>
@@ -74,23 +82,23 @@ export default {
       <div class="nav-top">
         <!-- 左边面包屑 -->
         <div class="nav-left">
-          <el-icon class="el-icon-fold" size="25" style="margin-right: 10px;">
-            <fold @click="toggle()" ></fold>
+          <el-icon :size="25" style="margin-right: 10px;">
+            <fold @click="toggle()"></fold>
           </el-icon>
-          
+
           <div class="bread">面包屑</div>
         </div>
         <!-- 右侧用户信息 -->
         <div class="user-info">
-          <el-badge :is-dot="true" class="user-badge">
-            <el-icon class="el-icon-bell">
+          <el-badge :is-dot="noticeCount > 0 ? true : false" class="user-badge">
+            <el-icon>
               <bell></bell>
             </el-icon>
           </el-badge>
           <el-dropdown class="user-dropdown" @command="handleLogout">
             <span class="user-link">
               {{ userInfo.userName }}
-              <el-icon class="el-icon--right">
+              <el-icon>
                 <arrow-down />
               </el-icon>
             </span>
@@ -140,24 +148,11 @@ export default {
         width: 32px;
         height: 32px;
       }
-
-      span {}
-
-
     }
 
     .nav-menu {
       border-right: none;
       height: calc(100vh - 50px);
-
-      .menu-setting {
-        width: 20px;
-        height: 20px;
-        margin-right: 12px;
-      }
-
-      span {}
-
     }
 
     &.fold {
@@ -184,29 +179,22 @@ export default {
         display: flex;
         align-items: center;
         z-index: 10;
-        .menu-fold {
-          width: 25px;
-          height: 25px;
-          margin-right: 15px;
-        }
 
+        
+
+      }
 
       .user-info {
         .user-badge {
           line-height: 30px;
           margin-right: 15px;
-
-          .el-icon-bell {}
         }
 
         .user-dropdown {
           margin-top: 15px;
-
           .user-link {
             cursor: pointer;
             color: #409eff;
-
-            .el-icon--right {}
           }
         }
 
@@ -235,4 +223,5 @@ export default {
     }
   }
 
-}</style>
+}
+</style>

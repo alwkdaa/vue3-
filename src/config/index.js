@@ -23,7 +23,7 @@ const EnvConfig = {
 export default {
   env,
   //模拟数据 默认开启
-  // mock: true,
+  mock: true,
   ...EnvConfig[env],
   namespace: 'manage'
 }
