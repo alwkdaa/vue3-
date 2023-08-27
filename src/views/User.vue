@@ -38,6 +38,7 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination class="pagination" background layout="prev, pager,next" :total="pager.total" @current-change="handleCurrentChange"></el-pagination>
     </div>
   </div>
 </template>
@@ -46,15 +47,19 @@ import { onMounted, reactive, getCurrentInstance, ref } from 'vue';
 export default {
   name: 'User',
   setup() {
+    // 获取全局对象类似于options api里面的this
     const { proxy } = getCurrentInstance()
+    // Mounted生命周期函数
     onMounted(() => {
       getUserList()
     });
-
+    // 查找的数据
     const user = reactive({
       state: 0
     })
+    // 用户列表
     const userList = ref([])
+    //表格的列的配置
     const columns = reactive([
       {
         label: "用户ID",
@@ -85,6 +90,7 @@ export default {
         prop: "lastLoginTime"
       },
     ])
+    // 分页的配置
     const pager = reactive({
       pageNum: 1,
       pageSize: 10,
@@ -104,13 +110,20 @@ export default {
     // 重置的方法
     const handleReset = () => {
       proxy.$refs.form.resetFields()
+    };
+    // 分页的点击
+    const handleCurrentChange = (current) => {
+      pager.pageNum = current
+      getUserList()
     }
     return {
       user,
       userList,
       columns,
+      pager,
       handleQuery,
       handleReset,
+      handleCurrentChange,
     }
   },
 }
