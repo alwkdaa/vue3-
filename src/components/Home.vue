@@ -22,7 +22,9 @@
           <div class="menu-fold" @click="toggle">
             <i class="el-icon-s-fold"></i>
           </div>
-          <div class="bread">面包屑</div>
+          <div class="bread">
+            <breadcrumb></breadcrumb>
+          </div>
         </div>
         <!-- 右侧用户信息 -->
         <div class="user-info">
@@ -57,10 +59,13 @@
 <script>
 // 引入左侧菜单组件
 import TreeMenu from './TreeMenu.vue'
+// 引入面包屑组件
+import Breadcrumb from './Breadcrumb.vue'
 export default {
   name: 'home',
   components: {
-    TreeMenu
+    TreeMenu,
+    Breadcrumb
   },
   data() {
     return {
