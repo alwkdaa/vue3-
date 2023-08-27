@@ -30,7 +30,7 @@
       <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
-          :width="item.width" />
+          :width="item.width" :formatter="item.formatter" />
         <el-table-column label="操作" width="150">
           <template #default="scope">
             <el-button size="mini">编辑</el-button>
@@ -75,11 +75,24 @@ export default {
       },
       {
         label: "用户角色",
-        prop: "role"
+        prop: "role",
+        formatter(row,column,value){
+          return{
+            0:'管理员',
+            1:'普通用户'
+          }[value]
+        }
       },
       {
         label: "用户状态",
-        prop: "state"
+        prop: "state",
+        formatter(row,column,value){
+          return{
+            1:'在职',
+            2:'离职',
+            3:'试用期'
+          }[value]
+        }
       },
       {
         label: "注册时间",
