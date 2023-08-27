@@ -25,9 +25,9 @@
     <div class="base-table">
       <div class="action">
         <el-button type="primary">新增</el-button>
-        <el-button type="danger">批量删除</el-button>
+        <el-button type="danger" @click="handlePatchDelete">批量删除</el-button>
       </div>
-      <el-table :data="userList" style="width: 100%">
+      <el-table :data="userList" style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
         <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
           :width="item.width" />
@@ -128,15 +128,45 @@ export default {
         proxy.$message.success('删除失败')
       }
     }
+    // 要删除的用户id的集合
+    const checkedUsersIds = ref([])
+    // 批量删除按钮
+    const handlePatchDelete = async () => {
+      if(checkedUsersIds.value.length == 0){
+        proxy.$message.error("请选择要删除的用户")
+        return
+      }
+      const res = await proxy.$api.userDelete({
+        userIds: checkedUsersIds.value
+      })
+      if(res.nModified>0){
+        proxy.$message.success('删除成功')
+        getUserList()
+      }else{
+        proxy.$message.success('删除失败')
+      }
+
+    }
+    // 多选的方法
+    const handleSelectionChange = (list)=> {
+      let arr = []
+      list.forEach(ele => {
+        arr.push(ele.userId)
+      });
+      checkedUsersIds.value = arr
+    }
     return {
       user,
       userList,
       columns,
       pager,
+      checkedUsersIds,
       handleQuery,
       handleReset,
       handleCurrentChange,
       handleDelete,
+      handlePatchDelete,
+      handleSelectionChange,
     }
   },
 }
