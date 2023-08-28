@@ -1,12 +1,12 @@
 <template>
   <div class="user-manage">
     <div class="query-form">
-      <el-form :inline="true" :model="menuForm" ref="form">
+      <el-form :inline="true" :model="queryForm" ref="form">
         <el-form-item label="菜单名称" prop="menuName">
-          <el-input v-model="menuForm.menuName" placeholder="请输入菜单名称"></el-input>
+          <el-input v-model="queryForm.menuName" placeholder="请输入菜单名称"></el-input>
         </el-form-item>
         <el-form-item label="菜单状态" prop="menuState">
-          <el-select v-model="menuForm.menuState">
+          <el-select v-model="queryForm.menuState">
             <el-option :value="1" label="正常"></el-option>
             <el-option :value="2" label="停用"></el-option>
           </el-select>
@@ -19,14 +19,14 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd">创建</el-button>
+        <el-button type="primary" @click="handleAdd(1)">创建</el-button>
       </div>
       <el-table :data="menuList" style="width: 100%" row-key="_id">
         <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label"
           :width="item.width" :formatter="item.formatter" />
         <el-table-column label="操作" width="220">
           <template #default="scope">
-            <el-button type="primary" size="mini" @click="handleAdd(scope.row)">新增</el-button>
+            <el-button type="primary" size="mini" @click="handleAdd(2,scope.row)">新增</el-button>
             <el-button type="primary" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -34,36 +34,38 @@
       </el-table>
     </div>
     <!-- 菜单新增 -->
-    <el-dialog title="用户新增" v-model="showModal" :before-close="handleCloseDialog">
-      <el-form :model="userForm" ref="dialogForm" label-width="100px" :rules="rules">
-        <el-form-item prop="userName" label="用户名">
-          <el-input placeholder="请输入用户名" v-model="userForm.userName" :disabled="action == 'edit'"></el-input>
+    <el-dialog title="菜单新增" v-model="showModal" :before-close="handleCloseDialog">
+      <el-form :model="menuForm" ref="dialogForm" label-width="100px" :rules="rules">
+        <el-form-item prop="parentId" label="父级菜单">
+          <el-cascader v-model="menuForm.parentId" :options="menuList" :props="{ checkStrictly:true,value:'_id', label:'menuName' }" clearable></el-cascader>
+          <span>不选择默认是创建一级菜单</span>
         </el-form-item>
-        <el-form-item prop="userEmail" label="邮箱">
-          <el-input placeholder="请输入邮箱" v-model="userForm.userEmail" :disabled="action == 'edit'">
-            <template #append>@jason.com</template>
-          </el-input>
+        <el-form-item prop="menuType" label="菜单类型">
+          <el-radio-group v-model="menuForm.menuType">
+            <el-radio :value="1">菜单</el-radio>
+            <el-radio :value="2">按钮</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item prop="mobile" label="手机号">
-          <el-input placeholder="请输入手机号" v-model="userForm.mobile"></el-input>
+        <el-form-item prop="menuName" label="菜单名称">
+          <el-input placeholder="请输入菜单名称" v-model="menuForm.menuName"></el-input>
         </el-form-item>
-        <el-form-item prop="job" label="岗位">
-          <el-input placeholder="请输入岗位" v-model="userForm.job"></el-input>
+        <el-form-item prop="icon" label="菜单图标">
+          <el-input placeholder="请输入菜单图标" v-model="menuForm.icon"></el-input>
         </el-form-item>
-        <el-form-item prop="state" label="状态">
-          <el-select v-model="userForm.state" >
-            <el-option :value="1" label="在职"></el-option>
-            <el-option :value="2" label="离职"></el-option>
-            <el-option :value="3" label="试用期"></el-option>
-          </el-select>
+        <el-form-item prop="path" label="路由地址">
+          <el-input placeholder="请输入路由地址" v-model="menuForm.path"></el-input>
         </el-form-item>
-        <el-form-item prop="roleList" label="系统角色">
-          <el-select v-model="userForm.roleList" placeholder="请选择用户系统角色" multiple style="width:100%">
-            <el-option v-for="role in roleList" :key="role._id" :value="role._id" :label="role.roleName"></el-option>
-          </el-select>
+        <el-form-item prop="menuCode" label="权限标识">
+          <el-input placeholder="请输入权限标识" v-model="menuForm.menuCode"></el-input>
         </el-form-item>
-        <el-form-item prop="deptId" label="部门">
-           <el-cascader placeholder="请选择部门" v-model="userForm.deptId" :options="deptList" :props="{ checkStrictly: true, value:'_id', label:'deptName' }" clearable></el-cascader>
+        <el-form-item prop="component" label="组件路径">
+          <el-input placeholder="请输入组件路径" v-model="menuForm.component"></el-input>
+        </el-form-item>
+        <el-form-item prop="menuState" label="菜单状态">
+          <el-radio-group v-model="menuForm.menuState">
+            <el-radio :value="1">正常</el-radio>
+            <el-radio :value="2">停用</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -84,10 +86,15 @@ export default{
   data(){
     return{
       // 菜单表单
-      menuForm:{
+      queryForm:{
         menuState:1,
       },
+      menuForm:{},
       menuList:[],
+      // 控制新增编辑的模态框显示
+      showModal:false,
+      // 新增和编辑的标识
+      action: 'add',
       // table列的配置
       columns:[
         {
