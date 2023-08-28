@@ -185,11 +185,11 @@ export default {
       const res = await proxy.$api.userDelete({
         userIds: [row.userId]
       })
-      if(res.nModified>0){
+      if(res.modifiedCount>0){
         proxy.$message.success('删除成功')
         getUserList()
       }else{
-        proxy.$message.success('删除失败')
+        proxy.$message.error('删除失败')
       }
     }
     // 要删除的用户id的集合

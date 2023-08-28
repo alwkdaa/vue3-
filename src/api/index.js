@@ -43,7 +43,7 @@ export default{
       url:'/users/delete',
       method:'post',
       data: params,
-      mock: true
+      mock: false
     })
   },
   // 获取角色名称列表接口

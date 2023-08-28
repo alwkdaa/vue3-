@@ -54,15 +54,16 @@ function request (options) {
   if(options.method.toLowerCase() === 'get'){
     options.params = options.data
   }
+  let isMock = config.mock
   if(typeof options.mock !== 'undefined'){
-    config.mock = options.mock
+    isMock = options.mock
   }
   //在开发环境下的数据都是mock模拟的数据，要在生产环境下使用的都是线上环境的baseApi，所以在这里判断一下如果当前环境是生产环境，就将地址换为baseURL
   if(config.env === 'prod'){
     service.defaults.baseURL = config.baseApi
   }else{
     // 如果不是生产环境，就是用mock模拟数据，先判断mock是否开启，只有开启了才使用
-    service.defaults.baseURL = config.mock ? config.mockApi : config.baseApi
+    service.defaults.baseURL = isMock ? config.mockApi : config.baseApi
   }
   return service(options)
 }
