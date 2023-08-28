@@ -41,7 +41,7 @@
       <el-pagination class="pagination" background layout="prev, pager,next" :total="pager.total" @current-change="handleCurrentChange"></el-pagination>
     </div>
     <!-- 用户新增 -->
-    <el-dialog title="用户新增" v-model="showModal" :before-close="handleClose">
+    <el-dialog title="用户新增" v-model="showModal" :before-close="handleCloseDialog">
       <el-form :model="userForm" ref="dialogForm" label-width="100px" :rules="rules">
         <el-form-item prop="userName" label="用户名">
           <el-input placeholder="请输入用户名" v-model="userForm.userName" :disabled="action == 'edit'"></el-input>
@@ -320,6 +320,10 @@ export default {
       })
       
     }
+    const handleCloseDialog = () => {
+      showModal.value = false
+      handleReset("dialogForm")
+    }
     return {
       user,
       userList,
@@ -343,7 +347,8 @@ export default {
       handleClose,
       handleSubmit,
       handleEdit,
-      action
+      action,
+      handleCloseDialog
     }
   },
 }
