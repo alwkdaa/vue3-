@@ -34,7 +34,7 @@ export default{
       url:'/users/list',
       method:'get',
       data: params,
-      mock: true
+      mock: false
     })
   } ,
   // 删除用户接口

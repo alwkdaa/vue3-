@@ -19,7 +19,7 @@ service.interceptors.request.use((req) => {
   const header = req.headers
   // 拿到数据持久化中的token
   const { token="" } = storage.getItem('userInfo') || {}
-  if(!header.Authorization) header.Authorization = 'Bear ' + token
+  if(!header.Authorization) header.Authorization = 'Bearer ' + token
   return req
 })
 
