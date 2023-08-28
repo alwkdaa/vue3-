@@ -33,7 +33,7 @@
           :width="item.width" :formatter="item.formatter" />
         <el-table-column label="操作" width="150">
           <template #default="scope">
-            <el-button size="mini">编辑</el-button>
+            <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -44,10 +44,10 @@
     <el-dialog title="用户新增" v-model="showModal" :before-close="handleClose">
       <el-form :model="userForm" ref="dialogForm" label-width="100px" :rules="rules">
         <el-form-item prop="userName" label="用户名">
-          <el-input placeholder="请输入用户名" v-model="userForm.userName"></el-input>
+          <el-input placeholder="请输入用户名" v-model="userForm.userName" :disabled="action == 'edit'"></el-input>
         </el-form-item>
         <el-form-item prop="userEmail" label="邮箱">
-          <el-input placeholder="请输入邮箱" v-model="userForm.userEmail">
+          <el-input placeholder="请输入邮箱" v-model="userForm.userEmail" :disabled="action == 'edit'">
             <template #append>@jason.com</template>
           </el-input>
         </el-form-item>
@@ -217,6 +217,7 @@ export default {
     const showModal = ref(false)
     // 新增按钮
     const handleCreate = () => {
+      action.value = 'add'
       showModal.value = true
     }
     // 新增表单的信息
@@ -295,6 +296,17 @@ export default {
       })
       
     }
+    /* 用户 编辑 */
+    const handleEdit = (row) => {
+      // 编辑的时候是不允许修改用户名的
+      action.value = "edit"
+      showModal.value = true
+      // 浅拷贝将数据整合在一起，这里的row就是编辑得用户数据,这里会出现一个bug在点击新增得时候也会拿到用户的数据，要想新增得时候是空白就需要让页面完全渲染完成之后再去进行浅拷贝
+      proxy.$nextTick(() => {
+        Object.assign(userForm,row)
+      })
+      
+    }
     return {
       user,
       userList,
@@ -317,6 +329,8 @@ export default {
       getDeptList,
       handleClose,
       handleSubmit,
+      handleEdit,
+      action
     }
   },
 }
