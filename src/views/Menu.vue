@@ -86,10 +86,11 @@ export default {
   name: 'Menu',
   data() {
     return {
-      // 菜单表单
+      // 菜单查询的表单
       queryForm: {
         menuState: 1,
       },
+      // 新增和编辑模态框的表单
       menuForm: {
         menuType: 1,
         menuState: 1
@@ -162,14 +163,17 @@ export default {
   },
   methods: {
     // 调用获取菜单数据接口
-    async getMenuList(params) {
-      let res = await this.$api.menuList(params)
+    async getMenuList() {
+      let res = await this.$api.menuList(this.menuForm)
       console.log(res);
       this.menuList = res
     },
     // 查询按钮
     handleQuery() {
-      console.log("111");
+      this.menuForm.menuName = this.queryForm.menuName
+      this.menuForm.menuState = this.queryForm.menuState
+      // 直接调用获取菜单列表数据
+      this.getMenuList()
     },
     // 重置按钮
     handleReset(form) {
@@ -204,7 +208,25 @@ export default {
     },
     // 模态框确认按钮
     handleSubmit() {
-
+      // 先对dialogForm进行验证，验证表单是否通过rules验证，验证通过再进行下一步
+      this.$refs.dialogForm.validate(async (valid) => {
+        if(valid){
+          // 验证通过调用新增的接口，因为新增编辑和删除都是同一个接口，所以要传递调用的类型是新增还是编辑还是删除，所以要先对params进行处理
+          let {action, menuForm} = this
+          // 将表单数据与接口类型action整合在一起
+          let params = {...menuForm, action}
+          await this.$api.menuSubmit(params)
+          // 使模态框关闭
+          this.showModal = false
+          //提示操作成功
+          this.$message.success('操作成功')
+          // 重置表单数据
+          this.handleReset('dialogForm')
+          // 重新获取菜单列表数据
+          this.getMenuList()
+        }
+        
+      })
     }
   }
 }

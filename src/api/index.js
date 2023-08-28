@@ -70,5 +70,14 @@ export default{
       mock: false,
       data:params
     })
+  },
+  // 菜单新增和编辑接口
+  menuSubmit(params) {
+    return request({
+      url:'/menu/operate',
+      method:'post',
+      mock:true,
+      data:params
+    })
   }
 }
