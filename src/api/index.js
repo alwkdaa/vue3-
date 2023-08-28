@@ -62,12 +62,12 @@ export default{
       mock: true
     })
   },
-  // 新增用户
+  // 新增编辑用户
   userSubmit(params){
     return request({
       url:'/users/operate',
       method:'post',
-      mock: true,
+      mock: false,
       data:params
     })
   }

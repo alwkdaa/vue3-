@@ -295,7 +295,12 @@ export default {
           let res = await proxy.$api.userSubmit(params)
           if(res){
             showModal.value = false
-            proxy.$message.success('新增用户成功')
+            if(action.value == 'add'){
+              proxy.$message.success('新增用户成功')
+            }else{
+              proxy.$message.success('编辑用户成功')
+            }
+            
             handleReset("dialogForm")
             getUserList()
           }
@@ -310,6 +315,7 @@ export default {
       showModal.value = true
       // 浅拷贝将数据整合在一起，这里的row就是编辑得用户数据,这里会出现一个bug在点击新增得时候也会拿到用户的数据，要想新增得时候是空白就需要让页面完全渲染完成之后再去进行浅拷贝
       proxy.$nextTick(() => {
+        row.state = Number(row.state)
         Object.assign(userForm,row)
       })
       
