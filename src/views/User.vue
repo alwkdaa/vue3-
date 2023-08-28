@@ -296,7 +296,7 @@ export default {
       })
       
     }
-    /* 用户 编辑 */
+    /* 用户编辑 */
     const handleEdit = (row) => {
       // 编辑的时候是不允许修改用户名的
       action.value = "edit"
