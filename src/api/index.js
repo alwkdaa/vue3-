@@ -79,5 +79,13 @@ export default{
       mock:false,
       data:params
     })
+  },
+  /* 角色列表相关接口 */
+  roleList(){
+    return request({
+      url:'/roles/list',
+      method: 'get',
+      mock: true,
+    })
   }
 }
