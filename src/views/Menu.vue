@@ -93,7 +93,8 @@ export default {
       // 新增和编辑模态框的表单
       menuForm: {
         menuType: 1,
-        menuState: 1
+        menuState: 1,
+        parentId:[null]
       },
       menuList: [],
       // 控制新增编辑的模态框显示

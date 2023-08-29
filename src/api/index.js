@@ -25,7 +25,7 @@ export default{
       url:'/menu/list',
       method:'get',
       data: {},
-      mock: true
+      mock: false
     })
   },
   //获取用户列表接口
