@@ -28,7 +28,7 @@
           <template #default="scope">
             <el-button type="primary" size="mini" @click="handleAdd(2, scope.row)">新增</el-button>
             <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+            <el-button type="danger" size="mini" @click="handleDelete(scope.row._id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -198,8 +198,10 @@ export default {
       })
     },
     // 删除按钮
-    handleDelete() {
-
+    async handleDelete() {
+      await this.$api.menuSubmit({_id,action:'delete'})
+      this.$message.success('删除成功')
+      this.getMenuList()
     },
     // 模态框的叉号
     handleCloseDialog() {
