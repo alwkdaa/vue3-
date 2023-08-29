@@ -87,5 +87,14 @@ export default{
       method: 'get',
       mock: true,
     })
+  },
+  // 角色创建接口
+  roleOperate(params){
+    return request({
+      url:'/roles/operate',
+      method: 'post',
+      mock: true,
+      data:params
+    })
   }
 }
