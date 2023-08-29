@@ -27,7 +27,7 @@
         <el-table-column label="操作" width="220">
           <template #default="scope">
             <el-button type="primary" size="mini" @click="handleAdd(2, scope.row)">新增</el-button>
-            <el-button type="primary" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -189,8 +189,13 @@ export default {
       }
     },
     // 编辑按钮
-    handleEdit() {
-
+    handleEdit(row) {
+      // row是传进来的所要编辑的菜单数据
+      this.showModal = true
+      this.action = 'edit'
+      this.$nextTick(() => {
+        Object.assign(this.menuForm, row)
+      })
     },
     // 删除按钮
     handleDelete() {
