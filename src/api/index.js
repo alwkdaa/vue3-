@@ -76,7 +76,7 @@ export default{
     return request({
       url:'/menu/operate',
       method:'post',
-      mock:true,
+      mock:false,
       data:params
     })
   }

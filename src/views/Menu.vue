@@ -198,7 +198,7 @@ export default {
       })
     },
     // 删除按钮
-    async handleDelete() {
+    async handleDelete(_id) {
       await this.$api.menuSubmit({_id,action:'delete'})
       this.$message.success('删除成功')
       this.getMenuList()
