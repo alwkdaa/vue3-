@@ -36,7 +36,7 @@
           <el-input placeholder="请输入部门名称" v-model="deptForm.deptName"></el-input>
         </el-form-item>
         <el-form-item label="负责人" prop="userName">
-          <el-select placeholder="请选择负责人" v-model="deptForm.userName">
+          <el-select placeholder="请选择负责人" v-model="deptForm.userName" @change="handleUser">
             <el-option v-for="item in userList" :key="item.userId" :label="item.userName"
               :value="`${item.userId}/${item.userName}/${item.userEmail}`"></el-option>
           </el-select>
@@ -90,7 +90,31 @@ export default {
       // 点击模态框确定按钮，调用的接口类型
       action: "create",
       userList: [],
-      deptForm:{},
+      deptForm: {},
+      // 模态框表单验证规则
+      rules: {
+        parentId: [
+          {
+            required: true,
+            message: '请选择上级部门',
+            trigger: 'blur'
+          }
+        ],
+        deptName: [
+          {
+            required: true,
+            message: '请输入部门名称',
+            trigger: "blur",
+          }
+        ],
+        userName: [
+          {
+            required: true,
+            message: '请选择负责人',
+            trigger: "blur"
+          }
+        ]
+      }
     }
   },
   mounted() {
@@ -104,7 +128,7 @@ export default {
       this.deptList = list
     },
     // 获取所有用户列表
-    async getAllUserList(){
+    async getAllUserList() {
       let list = await this.$api.userAllList()
       this.userList = list
     },
@@ -117,28 +141,51 @@ export default {
     handleEdit(row) {
       this.action = "edit"
       this.showModel = true
+      this.$nextTick(()=>{
+        Object.assign(this.deptForm,row, {userName:`${row.userId}/${row.userName}/${row.userEmail}`})
+      })
     },
     // 删除按钮
-    handleDelete(_id) {
+    async handleDelete(_id) {
       this.action = "delete"
+      await this.$api.deptOperate({action: this.action, _id})
+      this.$message.success('删除成功')
     },
     // 点击模态框叉号
-    handleCloseDialog(){
+    handleCloseDialog() {
       this.showModel = false
     },
     // 点击重置按钮
-    handleReset(form){
+    handleReset(form) {
       this.$refs[form].resetFields()
     },
     // 模态框点击取消按钮
-    handleClose(){
+    handleClose() {
       this.showModel = false
       this.handleReset('deptForm')
     },
     // 模态框点击确定按钮
-    handleSubmit(){
-
-    }
+    handleSubmit() {
+      this.$refs.deptForm.validate(async (valid) => {
+        if (valid) {
+          let params = { ...this.deptForm, ...action }
+          delete params.userEmail
+          let res = await this.$api.deptOperate(params)
+          if (res) {
+            this.showModel = false
+            this.handleReset('deptForm')
+            this.$message.success('操作成功')
+          }
+        }
+      })
+    },
+    // 负责人选择的改变change
+    handleUser(val) {
+      // 这里的val拿到的就是用户的id，名字，和邮箱
+      const [userId, userName, userEmail] = val.split('/')
+      // 浅拷贝
+      Object.assign(this.deptForm, { userId, userName, userEmail })
+    },
   }
 }
 </script>

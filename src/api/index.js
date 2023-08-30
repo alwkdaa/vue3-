@@ -114,5 +114,15 @@ export default {
       mock: false,
       data: params
     })
-  }
+  },
+  /* 部门相关接口 */
+  // 部门创建编辑删除接口
+  deptOperate(params){
+    return request({
+      url:"/dept/operate",
+      method: 'post',
+      mock: true,
+      data: params
+    })
+  },
 }
