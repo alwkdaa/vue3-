@@ -103,7 +103,7 @@ export default {
     return request({
       url: '/roles/update/permission',
       method: 'post',
-      mock: true,
+      mock: false,
       data: params
     })
   }
