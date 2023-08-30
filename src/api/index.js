@@ -51,7 +51,7 @@ export default {
     return request({
       url: '/roles/allList',
       method: 'get',
-      mock: true
+      mock: false
     })
   },
   // 获取部门列表
@@ -81,11 +81,12 @@ export default {
     })
   },
   /* 角色列表相关接口 */
-  roleList() {
+  roleList(params) {
     return request({
       url: '/roles/list',
       method: 'get',
-      mock: true,
+      mock: false,
+      data:params
     })
   },
   // 角色创建接口

@@ -6,7 +6,7 @@
           <el-input v-model="queryForm.roleName" placeholder="请输入角色名称"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" >查询</el-button>
+          <el-button type="primary">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -26,10 +26,11 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination class="pagination" background layout="prev, pager,next" :total="pager.total" @current-change="handleCurrentChange"></el-pagination>
+      <el-pagination class="pagination" background layout="prev, pager,next" :total="pager.total"
+        @current-change="handleCurrentChange"></el-pagination>
     </div>
     <!-- 菜单新增 -->
-   <el-dialog title="角色新增" v-model="showModal" :before-close="handleCloseDialog">
+    <el-dialog title="角色新增" v-model="showModal" :before-close="handleCloseDialog">
       <el-form :model="roleForm" ref="dialogForm" label-width="100px" :rules="rules">
         <el-form-item prop="roleName" label="角色名称">
           <el-input placeholder="请输入角色的名称" v-model="roleForm.roleName"></el-input>
@@ -54,7 +55,8 @@
           {{ curRoleName }}
         </el-form-item>
         <el-form-item prop="remark" label="选择权限">
-          <el-tree :data="menuList" show-checkbox node-key="_id" :props="{label:'menuName'}" default-expand-all ref="permissionTree"></el-tree>
+          <el-tree :data="menuList" show-checkbox node-key="_id" :props="{ label: 'menuName' }" default-expand-all
+            ref="permissionTree"></el-tree>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -74,7 +76,7 @@ export default {
   name: 'Role',
   data() {
     return {
-      showModal:false,
+      showModal: false,
       // 菜单查询的表单
       queryForm: {
         roleName: '',
@@ -93,11 +95,11 @@ export default {
         {
           label: '权限列表',
           prop: 'permissionList',
-          formatter:(row,column,value)=>{
-            let names=[]
-            let list=value.halfCheckedKeys || []
+          formatter: (row, column, value) => {
+            let names = []
+            let list = value.halfCheckedKeys || []
             list.map((key) => {
-              if(key) names.push(this.actionMap[key])
+              if (key) names.push(this.actionMap[key])
             })
             return names.join(',')
           }
@@ -110,11 +112,11 @@ export default {
           }
         },
       ],
-      pager:{
-        total:0,
-        pageSize:10
+      pager: {
+        total: 0,
+        pageSize: 10
       },
-      roleForm:{},
+      roleForm: {},
       //dialog表单的验证规则
       rules: {
         roleName: [
@@ -125,13 +127,13 @@ export default {
           },
         ],
       },
-      action:'add',
+      action: 'add',
       // 控制权限管理的模态框展示
-      showPermission:false,
-      curRoleName:'',
-      curRoleId:'',
-      menuList:[],
-      actionMap:{},
+      showPermission: false,
+      curRoleName: '',
+      curRoleId: '',
+      menuList: [],
+      actionMap: {},
     }
   },
   mounted() {
@@ -139,37 +141,37 @@ export default {
     this.getMenuList()
   },
   methods: {
-    async getRoleList(){
-      const {list,page} = await this.$api.roleList(this.queryForm)
+    async getRoleList() {
+      const { list, page } = await this.$api.roleList({ ...this.queryForm, ...this.pager })
       this.pager = page
       this.roleList = list
     },
     // 创建按钮
-    handleAdd(){
+    handleAdd() {
       this.showModal = true
       this.action = 'add'
     },
     // 取消按钮
-    handleClose(){
+    handleClose() {
       this.handleReset('dialogForm')
       this.showModal = false
     },
     // 重置按钮
-    handleReset(form){
+    handleReset(form) {
       this.$refs[form].resetFields()
     },
-    handleCloseDialog(){
+    handleCloseDialog() {
       this.handleReset('dialogForm')
       this.showModal = false
     },
     // 确定按钮
-    handleSubmit(){
+    handleSubmit() {
       this.$refs.dialogForm.validate(async (valid) => {
-        if(valid){
-          let { roleName, action} = this
-          let params = { ...roleName, action}
+        if (valid) {
+          let { roleName, action } = this
+          let params = { ...roleName, action }
           let res = await this.$api.roleOperate(params)
-          if(res){
+          if (res) {
             this.showModal = false
             this.$message.success('创建成功')
             this.handleReset('dialogForm')
@@ -179,49 +181,48 @@ export default {
       })
     },
     // 编辑按钮
-    handleEdit(row){
+    handleEdit(row) {
       this.action = 'edit'
       this.showModal = true
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         this.roleForm = row
       })
     },
     // 删除按钮
-    async handleDelete(_id){
-      await this.$api.roleOperate({_id,action:'delete'})
+    async handleDelete(_id) {
+      await this.$api.roleOperate({ _id, action: 'delete' })
       this.$message.success('删除成功')
       this.getRoleList()
     },
     // 设置权限模态框的关闭
-    handlePermissionCloseDialog(){
+    handlePermissionCloseDialog() {
       this.showPermission = false
 
     },
-    handlePermission(row){
+    handlePermission(row) {
       this.showPermission = true
       this.curRoleId = row._id
       this.curRoleName = row.roleName
-      console.log(row);
       const { checkedKeys } = row.permissionList
       setTimeout(() => {
         this.$refs.permissionTree.setCheckedKeys(checkedKeys)
       });
 
     },
-    async getMenuList(){
+    async getMenuList() {
       const list = await this.$api.menuList()
       this.menuList = list
       this.getActionMap(list)
     },
-    getActionMap(list){
+    getActionMap(list) {
       let actionMap = {}
       // 使用递归实现
       const deep = (arr) => {
         let item = arr.pop()
-        if(item.children && item.action){
+        if (item.children && item.action) {
           actionMap[item._id] = item.menuName
         }
-        if(item.children && !item.action){
+        if (item.children && !item.action) {
           deep(item.children)
         }
       }
@@ -229,23 +230,23 @@ export default {
       this.actionMap = actionMap
     },
     // 点击确定按钮
-    async handlePermissionSubmit(){
+    async handlePermissionSubmit() {
       console.log(this.$refs.permissionTree);
       let nodes = this.$refs.permissionTree.getCheckedNodes()
       let halfKeys = this.$refs.permissionTree.getHalfCheckedKeys()
-      let checkedKeys =[]
+      let checkedKeys = []
       let parentKeys = []
       nodes.map(node => {
         // 如果node没有childern，就是按钮级别
-        if(!node.children){
+        if (!node.children) {
           checkedKeys.push(node._id)
-        }else{
+        } else {
           parentKeys.push(node._id)
         }
       })
       let params = {
-        _id:this.curRoleId,
-        permissionList:{
+        _id: this.curRoleId,
+        permissionList: {
           // checkedKeys存放的就是按钮级别的菜单
           checkedKeys,
           // halfCheckedKeys存放的就是菜单
