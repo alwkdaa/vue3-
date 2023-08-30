@@ -6,7 +6,7 @@
           <el-input v-model="queryForm.roleName" placeholder="请输入角色名称"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">查询</el-button>
+          <el-button type="primary" @click="getRoleList">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -29,7 +29,7 @@
       <el-pagination class="pagination" background layout="prev, pager,next" :total="pager.total"
         @current-change="handleCurrentChange"></el-pagination>
     </div>
-    <!-- 菜单新增 -->
+    <!-- 角色新增 -->
     <el-dialog title="角色新增" v-model="showModal" :before-close="handleCloseDialog">
       <el-form :model="roleForm" ref="dialogForm" label-width="100px" :rules="rules">
         <el-form-item prop="roleName" label="角色名称">
@@ -149,7 +149,7 @@ export default {
     // 创建按钮
     handleAdd() {
       this.showModal = true
-      this.action = 'add'
+      this.action = 'create'
     },
     // 取消按钮
     handleClose() {
@@ -168,8 +168,9 @@ export default {
     handleSubmit() {
       this.$refs.dialogForm.validate(async (valid) => {
         if (valid) {
-          let { roleName, action } = this
-          let params = { ...roleName, action }
+          let { roleForm, action } = this
+          // console.log(this.roleForm.roleName,action);
+          let params = { ...roleForm, action }
           let res = await this.$api.roleOperate(params)
           if (res) {
             this.showModal = false
@@ -185,7 +186,7 @@ export default {
       this.action = 'edit'
       this.showModal = true
       this.$nextTick(() => {
-        this.roleForm = row
+        this.roleForm = { _id:row._id, roleName: row.roleName, remark: row.remark }
       })
     },
     // 删除按钮
@@ -256,6 +257,11 @@ export default {
       await this.$api.updatePermission(params)
       this.showPermission = false
       this.$message.success('设置成功')
+      this.getRoleList()
+    },
+    // 分页按钮
+    handleCurrentChange(current) {
+      this.pager.pageNum = current
       this.getRoleList()
     }
   }
