@@ -166,7 +166,6 @@ export default {
     // 调用获取菜单数据接口
     async getMenuList() {
       let res = await this.$api.menuList(this.menuForm)
-      console.log(res);
       this.menuList = res
     },
     // 查询按钮
@@ -184,9 +183,10 @@ export default {
     handleAdd(type, row) {
       this.showModal = true
       this.action = "add"
+      console.log(row)
       if(type == 2){
         // console.log("2");
-        this.menuForm.parentId = [...row.parentId, row._id].filter(item => item)
+        this.menuForm.parentId = [...row.parentId, row._id].filter((item) => item)
       }
     },
     // 编辑按钮
@@ -223,7 +223,7 @@ export default {
           let {action, menuForm} = this
           // 将表单数据与接口类型action整合在一起
           let params = {...menuForm, action}
-          await this.$api.menuSubmit(params)
+          let res = await this.$api.menuSubmit(params)
           // 使模态框关闭
           this.showModal = false
           //提示操作成功

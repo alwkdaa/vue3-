@@ -21,7 +21,7 @@
         <el-table-column label="操作" width="240">
           <template #default="scope">
             <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button size="mini">设置权限</el-button>
+            <el-button size="mini" @click="handlePermission(scope.row)">设置权限</el-button>
             <el-button type="danger" size="mini" @click="handleDelete(scope.row._id)">删除</el-button>
           </template>
         </el-table-column>
@@ -46,7 +46,26 @@
           </el-button>
         </span>
       </template>
-    </el-dialog> -->
+    </el-dialog>
+    <!-- 权限管理 -->
+    <el-dialog title="设置权限" v-model="showPermission" :before-close="handlePermissionCloseDialog">
+      <el-form label-width="100px">
+        <el-form-item prop="roleName" label="角色名称">
+          {{ curRoleName }}
+        </el-form-item>
+        <el-form-item prop="remark" label="选择权限">
+          <el-tree :data="menuList" show-checkbox node-key="_id" :props="{label:'menuName'}" default-expand-all ref="permissionTree"></el-tree>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showPermission = false">取消</el-button>
+          <el-button type="primary" @click="handlePermissionSubmit">
+            确定
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -98,11 +117,17 @@ export default {
           },
         ],
       },
-      action:'add'
+      action:'add',
+      // 控制权限管理的模态框展示
+      showPermission:false,
+      curRoleName:'',
+      curRoleId:'',
+      menuList:[]
     }
   },
   mounted() {
     this.getRoleList()
+    this.getMenuList()
   },
   methods: {
     async getRoleList(){
@@ -156,6 +181,55 @@ export default {
     async handleDelete(_id){
       await this.$api.roleOperate({_id,action:'delete'})
       this.$message.success('删除成功')
+      this.getRoleList()
+    },
+    // 设置权限模态框的关闭
+    handlePermissionCloseDialog(){
+      this.showPermission = false
+
+    },
+    handlePermission(row){
+      this.showPermission = true
+      this.curRoleId = row._id
+      this.curRoleName = row.roleName
+      console.log(row);
+      const { checkedKeys } = row.permissionList
+      setTimeout(() => {
+        this.$refs.permissionTree.setCheckedKeys(checkedKeys)
+      });
+
+    },
+    async getMenuList(){
+      const list = await this.$api.menuList()
+      this.menuList = list
+    },
+    // 点击确定按钮
+    async handlePermissionSubmit(){
+      console.log(this.$refs.permissionTree);
+      let nodes = this.$refs.permissionTree.getCheckedNodes()
+      let halfKeys = this.$refs.permissionTree.getHalfCheckedKeys()
+      let checkedKeys =[]
+      let parentKeys = []
+      nodes.map(node => {
+        // 如果node没有childern，就是按钮级别
+        if(!node.children){
+          checkedKeys.push(node._id)
+        }else{
+          parentKeys.push(node._id)
+        }
+      })
+      let params = {
+        _id:this.curRoleId,
+        permissionList:{
+          // checkedKeys存放的就是按钮级别的菜单
+          checkedKeys,
+          // halfCheckedKeys存放的就是菜单
+          halfCheckedKeys: parentKeys.concat(halfKeys)
+        }
+      }
+      await this.$api.updatePermission(params)
+      this.showPermission = false
+      this.$message.success('设置成功')
       this.getRoleList()
     }
   }
