@@ -42,7 +42,7 @@ export default {
     return request({
       url: '/users/all/list',
       method: 'get',
-      mock: true
+      mock: false
     })
   },
   // 删除用户接口
@@ -63,11 +63,12 @@ export default {
     })
   },
   // 获取部门列表
-  getDeptList() {
+  getDeptList(params) {
     return request({
       url: '/dept/list',
       method: 'get',
-      mock: true
+      mock: false,
+      data: params
     })
   },
   // 新增编辑用户
@@ -121,7 +122,7 @@ export default {
     return request({
       url:"/dept/operate",
       method: 'post',
-      mock: true,
+      mock: false,
       data: params
     })
   },

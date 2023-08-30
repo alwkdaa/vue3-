@@ -6,7 +6,7 @@
           <el-input placeholder="请输入部门名称" v-model="queryForm.deptName"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">查询</el-button>
+          <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button type="primary" @click="handleReset('queryForm')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -90,7 +90,9 @@ export default {
       // 点击模态框确定按钮，调用的接口类型
       action: "create",
       userList: [],
-      deptForm: {},
+      deptForm: {
+        parentId:[null]
+      },
       // 模态框表单验证规则
       rules: {
         parentId: [
@@ -137,12 +139,16 @@ export default {
       this.action = "create"
       this.showModel = true
     },
+    // 查询按钮
+    handleQuery(){
+      this.getDeptList()
+    },
     // 编辑按钮
     handleEdit(row) {
       this.action = "edit"
       this.showModel = true
       this.$nextTick(()=>{
-        Object.assign(this.deptForm,row, {userName:`${row.userId}/${row.userName}/${row.userEmail}`})
+        Object.assign(this.deptForm,row)
       })
     },
     // 删除按钮
@@ -150,6 +156,7 @@ export default {
       this.action = "delete"
       await this.$api.deptOperate({action: this.action, _id})
       this.$message.success('删除成功')
+      this.getDeptList()
     },
     // 点击模态框叉号
     handleCloseDialog() {
@@ -168,13 +175,14 @@ export default {
     handleSubmit() {
       this.$refs.deptForm.validate(async (valid) => {
         if (valid) {
-          let params = { ...this.deptForm, ...action }
+          let params = { ...this.deptForm,action: this.action}
           delete params.userEmail
           let res = await this.$api.deptOperate(params)
           if (res) {
             this.showModel = false
             this.handleReset('deptForm')
             this.$message.success('操作成功')
+            this.getDeptList()
           }
         }
       })
