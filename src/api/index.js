@@ -37,6 +37,14 @@ export default {
       mock: false
     })
   },
+  // 获取所有用户列表
+  userAllList(){
+    return request({
+      url: '/users/all/list',
+      method: 'get',
+      mock: true
+    })
+  },
   // 删除用户接口
   userDelete(params) {
     return request({
