@@ -92,7 +92,15 @@ export default {
         },
         {
           label: '权限列表',
-          prop: 'menuType',
+          prop: 'permissionList',
+          formatter:(row,column,value)=>{
+            let names=[]
+            let list=value.halfCheckedKeys || []
+            list.map((key) => {
+              if(key) names.push(this.actionMap[key])
+            })
+            return names.join(',')
+          }
         },
         {
           label: '创建时间',
@@ -122,7 +130,8 @@ export default {
       showPermission:false,
       curRoleName:'',
       curRoleId:'',
-      menuList:[]
+      menuList:[],
+      actionMap:{},
     }
   },
   mounted() {
@@ -202,6 +211,22 @@ export default {
     async getMenuList(){
       const list = await this.$api.menuList()
       this.menuList = list
+      this.getActionMap(list)
+    },
+    getActionMap(list){
+      let actionMap = {}
+      // 使用递归实现
+      const deep = (arr) => {
+        let item = arr.pop()
+        if(item.children && item.action){
+          actionMap[item._id] = item.menuName
+        }
+        if(item.children && !item.action){
+          deep(item.children)
+        }
+      }
+      deep(JSON.parse(JSON.stringify(list)))
+      this.actionMap = actionMap
     },
     // 点击确定按钮
     async handlePermissionSubmit(){
