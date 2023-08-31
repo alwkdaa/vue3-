@@ -135,4 +135,14 @@ export default {
       data: params
     })
   },
+  /* 审批相关接口 */
+  // 获取审批列表
+  getApplyList(params){
+    return request({
+      url:"/leave/list",
+      method: 'get',
+      mock: true,
+      data: params
+    })
+  }
 }
