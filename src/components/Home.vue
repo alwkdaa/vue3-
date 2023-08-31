@@ -96,7 +96,7 @@ export default {
     },
     // 获取菜单数据
     async getMenuList() {
-      const res = await this.$api.menuList()
+      const res = await this.$api.permissionList()
       this.userMenu = res
     }
   }

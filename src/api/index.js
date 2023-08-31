@@ -28,6 +28,15 @@ export default {
       mock: false
     })
   },
+  // 获取权限列表的接口
+  permissionList(){
+    return request({
+      url: '/users/getPermissionList',
+      method: 'get',
+      data: {},
+      mock: false
+    })
+  },
   //获取用户列表接口
   userList(params) {
     return request({
