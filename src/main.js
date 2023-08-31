@@ -25,6 +25,21 @@ app.config.globalProperties.$request = request;
 app.config.globalProperties.$api = api;
 app.config.globalProperties.$storage = storage;
 
+// 自定义指令
+app.directive('has',{
+  // 这里参数el代表的就是dom
+  beforeMount: (el,binding) => {
+    let userAction = storage.getItem('actionList')
+    let value = binding.value
+    let hasPermission = userAction.includes(value)
+    if(!hasPermission){
+      el.style.display = 'none'
+      setTimeout(()=>{
+        el.parentNode.removeChild(el)
+      },0)
+    }
+  }
+})
 
 app.use(router)
 app.use(ElementPlus, { size: 'small' })

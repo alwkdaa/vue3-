@@ -48,7 +48,7 @@
       <!-- 下面区域 -->
       <div class="wrapper">
         <!-- 主要区域 -->
-          <router-view></router-view>
+        <router-view></router-view>
       </div>
     </div>
   </div>
@@ -96,8 +96,10 @@ export default {
     },
     // 获取菜单数据
     async getMenuList() {
-      const res = await this.$api.permissionList()
-      this.userMenu = res
+      const { menuList, actionList } = await this.$api.permissionList()
+      this.userMenu = menuList
+      this.$store.commit('saveMenuList', menuList)
+      this.$store.commit('saveActionList', actionList)
     }
   }
 }
@@ -162,6 +164,7 @@ export default {
         display: flex;
         align-items: center;
         z-index: 10;
+
         .menu-fold {
           margin-right: 15px;
           font-size: 18px;
