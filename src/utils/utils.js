@@ -25,5 +25,32 @@ export default{
     }
     
     return fmt 
+  },
+  // 生成路由的方法
+  generateRoute(menuList) {
+    let routes = []
+    // 递归函数 deepList 用于处理嵌套的菜单列表，以便生成对应的路由数组。
+    const deepList = (list) => {
+      while (list.length) {
+        let item = list.pop()
+        // 如果菜单项具有 action 属性，则将其转换为路由对象并添加到 routes 数组中
+        if (item.action) {
+          routes.push({
+            name: item.component,
+            path: item.path,
+            meta: {
+              title: item.menuName
+            },
+            component: item.component
+          })
+        }
+        // 如果菜单项具有 children 属性但没有 action 属性，则递归调用 deepList 函数处理子菜单
+        if (item.children && !item.action) {
+          deepList(item.children)
+        }
+      }
+    }
+    deepList(menuList)
+    return routes
   }
 }
