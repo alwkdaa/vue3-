@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory} from 'vue-router'
+import { createRouter, createWebHashHistory, onBeforeRouteUpdate} from 'vue-router'
 import Home from '../components/Home.vue'
 
 const routes = [
@@ -74,6 +74,27 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+// 检查路由的方法
+function checkPermission(path){
+  // 这里获取的就是当传进来的路径与获取的路径一致时返回长度
+  let hasPermission = router.getRoutes().filter(route => route.path == path).length
+  if(hasPermission){
+    return true
+  }else {
+    return false
+  }
+}
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  if(checkPermission(to.path)){
+    document.title = to.meta.title
+    next()
+  }else {
+    next('/404')
+  }
 })
 
 export default router
