@@ -29,7 +29,7 @@ export default {
     })
   },
   // 获取权限列表的接口
-  permissionList(){
+  permissionList() {
     return request({
       url: '/users/getPermissionList',
       method: 'get',
@@ -47,7 +47,7 @@ export default {
     })
   },
   // 获取所有用户列表
-  userAllList(){
+  userAllList() {
     return request({
       url: '/users/all/list',
       method: 'get',
@@ -104,7 +104,7 @@ export default {
       url: '/roles/list',
       method: 'get',
       mock: false,
-      data:params
+      data: params
     })
   },
   // 角色创建接口
@@ -127,9 +127,9 @@ export default {
   },
   /* 部门相关接口 */
   // 部门创建编辑删除接口
-  deptOperate(params){
+  deptOperate(params) {
     return request({
-      url:"/dept/operate",
+      url: "/dept/operate",
       method: 'post',
       mock: false,
       data: params
@@ -137,21 +137,30 @@ export default {
   },
   /* 审批相关接口 */
   // 获取审批列表
-  getApplyList(params){
+  getApplyList(params) {
     return request({
-      url:"/leave/list",
+      url: "/leave/list",
       method: 'get',
-      mock: true,
+      mock: false,
       data: params
     })
   },
   // 创建申请单
-  leaveOperate(params){
+  leaveOperate(params) {
     return request({
-      url:"/leave/operate",
+      url: "/leave/operate",
       method: 'post',
-      mock: true,
+      mock: false,
       data: params
     })
-  }
+  },
+  // 作废接口
+  leaveOperate(params) {
+    return request({
+      url: '/leave/operate',
+      method: 'post',
+      data: params,
+      mock: false
+    })
+  },
 }
