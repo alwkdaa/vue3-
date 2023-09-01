@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory} from 'vue-router'
 import Home from '../components/Home.vue'
 import storage from './../utils/storage'
 import API from './../api'
-import util from './../utils/utils'
+import utils from './../utils/utils'
 const routes = [
   {
     name: 'home',
@@ -85,15 +85,16 @@ async function loadAsyncRoutes() {
       try {
           const { menuList } = await API.permissionList()
           //获取到的菜单列表会被传入util.generateRoute()方法，用于生成路由。
-          let routes = util.generateRoute(menuList)
+          let routes = utils.generateRoute(menuList)
           //接下来，它使用import.meta.glob()动态导入Vue组件，并将其存储在modules变量中。
           const modules = import.meta.glob('../views/**/*.vue')
           routes.map(route => {
-              let url = `../views/${route.component}.vue`
-              
+              let url = `../views/${route.component}.vue`     
               route.component = modules[url]
+              // console.log(route,"路由");
               router.addRoute('home', route)
           })
+          
       } catch (error) {
 
       }

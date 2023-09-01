@@ -144,5 +144,14 @@ export default {
       mock: true,
       data: params
     })
+  },
+  // 创建申请单
+  leaveOperate(params){
+    return request({
+      url:"/leave/operate",
+      method: 'post',
+      mock: true,
+      data: params
+    })
   }
 }

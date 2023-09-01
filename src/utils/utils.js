@@ -36,7 +36,7 @@ export default{
         // 如果菜单项具有 action 属性，则将其转换为路由对象并添加到 routes 数组中
         if (item.action) {
           routes.push({
-            name: item.component,
+            name: item.menuName,
             path: item.path,
             meta: {
               title: item.menuName
