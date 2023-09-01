@@ -330,7 +330,7 @@ export default {
         if (valid) {
           try {
             let params = { ...leaveForm, action: action.value }
-            await proxy.$api.leaveOperate(params)
+            let res = await proxy.$api.leaveOperate(params)
             proxy.$message.success("创建成功")
             handleClose()
             getApplyList()

@@ -74,6 +74,11 @@ export default {
       userMenu: [],
     }
   },
+  computed:{
+    noticeCount(){
+      return this.$store.state.noticeCount
+    }
+  },
   mounted() {
     this.getNoticeCount()
     this.getMenuList()
@@ -92,7 +97,8 @@ export default {
     // 获取待审批事项
     async getNoticeCount() {
       const res = await this.$api.noticeCount()
-      this.noticeCount = res
+      // this.noticeCount = res
+      this.$store.commit('saveNoticeCount',res)
     },
     // 获取菜单数据
     async getMenuList() {

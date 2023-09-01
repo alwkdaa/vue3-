@@ -16,7 +16,7 @@ export default {
       url: '/leave/count',
       method: 'get',
       data: {},
-      mock: true
+      mock: false
     })
   },
   // 菜单接口
