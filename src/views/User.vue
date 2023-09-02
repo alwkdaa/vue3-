@@ -290,6 +290,7 @@ export default {
         if(valid){
           // 这个toRaw会将双向绑定的userForm对象变为普通的对象
           let params = toRaw(userForm)
+          console.log(params);
           params.userEmail += '@jason.com'
           params.action = action.value
           let res = await proxy.$api.userSubmit(params)

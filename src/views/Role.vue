@@ -98,6 +98,7 @@ export default {
           formatter: (row, column, value) => {
             let names = []
             let list = value.halfCheckedKeys || []
+            // console.log(this.actionMap, 'actionMap')
             list.map((key) => {
               if (key) names.push(this.actionMap[key])
             })
@@ -216,18 +217,22 @@ export default {
       this.getActionMap(list)
     },
     getActionMap(list) {
+      console.log(list,'===list')
       let actionMap = {}
       // 使用递归实现
       const deep = (arr) => {
-        let item = arr.pop()
-        if (item.children && item.action) {
-          actionMap[item._id] = item.menuName
-        }
-        if (item.children && !item.action) {
-          deep(item.children)
+        while (arr.length) {
+          let item = arr.pop();
+          if (item.children && item.action) {
+            actionMap[item._id] = item.menuName;
+          }
+          if (item.children) {
+            deep(item.children);
+          }
         }
       }
       deep(JSON.parse(JSON.stringify(list)))
+      
       this.actionMap = actionMap
     },
     // 点击确定按钮
